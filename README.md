@@ -8,9 +8,13 @@ layer + server-side advisory agent.
 - **Data** — Supabase (dedicated project). `pool_readings` + single-row
   `pool_config`, with analysis views that precompute FC min/target from CYA,
   adequacy/shock flags, approximate LSI, and weekly trend slopes.
-- **Agent** — `/agent` Node module. Reads the analysis views with the
-  service_role key (server-side only), asks an LLM for advisory actions with
-  exact doses, and drafts (never sends) an email via AgentMail.
+- **MCP + scheduled task (preferred)** — `/mcp` server exposes read-only tools
+  over the analysis views (service_role, server-side only). A scheduled Claude
+  task reads them daily and drafts the advisory on your subscription — no
+  Anthropic API credits. Same pattern as pepbros/liftlog.
+- **Agent (optional alternative)** — `/agent` standalone Node module that calls
+  the Anthropic API directly (requires API credits) and drafts via AgentMail.
+  Kept for reference; the MCP route above is the intended path.
 
 ## Setup
 
