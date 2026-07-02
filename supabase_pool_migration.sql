@@ -11,11 +11,14 @@ create table if not exists public.pool_config (
   id              int primary key default 1 check (id = 1), -- enforce single row
   volume_gal      numeric not null default 15000,
   surface_area_sqft numeric,
-  sanitation      text not null default 'liquid' check (sanitation in ('liquid','swg')),
+  sanitation      text not null default 'liquid' check (sanitation in ('liquid','swg','tabs')),
   surface         text not null default 'plaster' check (surface in ('plaster','vinyl','fiberglass')),
   -- FC minimum / target as a percent of CYA (TFP-style).
-  -- Liquid chlorine: min 7.5% of CYA, target ~11.5%.
+  -- Liquid chlorine or trichlor tabs: min 7.5% of CYA, target ~11.5%.
   -- SWG variant: min 5%, target ~7%.
+  -- 'tabs' uses the liquid percentages, but each ppm of FC from trichlor
+  -- also adds ~0.6 ppm CYA — watch cya_per_week and switch to liquid
+  -- once CYA passes cya_hi.
   fc_min_pct      numeric not null default 7.5,
   fc_target_pct   numeric not null default 11.5,
   cya_lo          numeric not null default 30,
@@ -211,9 +214,11 @@ grant select on public.pool_reading_analysis to service_role;
 grant select on public.pool_latest_analysis  to service_role;
 
 -- ------------------------------------------------------------
--- Seed: liquid-chlorine defaults. Edit this row after running.
+-- Seed: Shea's pool — 13,000 gal (incl. spa w/ overflow), plaster,
+-- trichlor tabs (liquid-chlorine FC percentages apply; CYA creep is
+-- the thing to watch).
 --
--- SWG variant — after seeding, run:
+-- SWG variant — if you ever switch, run:
 --   update pool_config set sanitation = 'swg',
 --     fc_min_pct = 5, fc_target_pct = 7,
 --     cya_lo = 70, cya_hi = 80,
@@ -221,5 +226,5 @@ grant select on public.pool_latest_analysis  to service_role;
 --   where id = 1;
 -- ------------------------------------------------------------
 insert into public.pool_config (id, volume_gal, sanitation, surface)
-values (1, 15000, 'liquid', 'plaster')
+values (1, 13000, 'tabs', 'plaster')
 on conflict (id) do nothing;

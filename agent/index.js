@@ -65,6 +65,11 @@ Rules:
   calculation before acting on scale/corrosion concerns.
 - If sanitation is 'swg', dose via percent-output/runtime changes where
   sensible, with liquid chlorine only for boosts/SLAM.
+- If sanitation is 'tabs' (trichlor): each 1 ppm FC from tabs adds ~0.6 ppm
+  CYA and lowers pH/TA. Watch cya_per_week; when cya_eff approaches or
+  exceeds cya_hi, recommend supplementing/replacing tabs with liquid chlorine
+  and note the higher FC min/target that rising CYA imposes. Any urgent FC
+  boost should still be dosed as liquid chlorine (tabs are too slow).
 
 Output format (plain text email body):
 1. One-line status.
