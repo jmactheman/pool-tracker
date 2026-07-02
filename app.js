@@ -184,7 +184,9 @@ $('#submit').addEventListener('click', submitReading);
 window.addEventListener('online', flushQueue);
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
+  // updateViaCache:'none' so importScripts (db.js/sync.js/config.js) are
+  // never served stale from the HTTP cache on SW updates
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
   // SW tells us when its background sync drained the queue
   navigator.serviceWorker.addEventListener('message', (e) => {
     if (e.data && e.data.type === 'pool-sync-done') updateBadge();

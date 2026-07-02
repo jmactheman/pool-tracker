@@ -1,7 +1,9 @@
 // Pool Tracker service worker: app-shell cache + background sync flush.
 importScripts('./config.js', './db.js', './sync.js');
 
-const CACHE = 'pool-tracker-v1';
+// Bump this whenever any shell file changes — it forces the SW to reinstall
+// and re-fetch the whole precache.
+const CACHE = 'pool-tracker-v2';
 const SHELL = [
   './',
   './index.html',
