@@ -29,7 +29,9 @@ const PoolSync = (() => {
   }
 
   // Drain the IndexedDB queue. Returns {sent, remaining}.
-  // On a 4xx (bad row — would never succeed) the row is dropped, not retried.
+  // Only a genuinely-bad row (400/422) is dropped. Auth/RLS/missing-table
+  // errors (401/403/404) are fixable config problems — keep the reading
+  // queued and retry after the fix.
   async function flush() {
     const items = await PoolDB.all();
     let sent = 0;
@@ -40,10 +42,10 @@ const PoolSync = (() => {
         await PoolDB.remove(qid);
         sent += 1;
       } catch (err) {
-        if (err.status && err.status >= 400 && err.status < 500) {
-          await PoolDB.remove(qid); // permanently rejected; don't wedge the queue
+        if (err.status === 400 || err.status === 422) {
+          await PoolDB.remove(qid); // malformed row — would never succeed
         } else {
-          break; // offline / server error — stop, keep order, retry later
+          break; // offline / server / config error — keep order, retry later
         }
       }
     }
