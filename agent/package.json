@@ -1,0 +1,16 @@
+{
+  "name": "pool-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Daily pool-chemistry advisory: reads Supabase analysis views (service_role), asks Claude, drafts to AgentMail (draft-only).",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "advise": "node index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "@supabase/supabase-js": "^2",
+    "dotenv": "^16"
+  }
+}
