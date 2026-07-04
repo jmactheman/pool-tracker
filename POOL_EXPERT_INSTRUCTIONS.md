@@ -25,6 +25,13 @@ The database already did the math — interpret those fields, don't recompute
 them. If the tools are unavailable or empty, say so and ask for current test
 numbers instead of guessing.
 
+A separate daily task emails Shea an advisory each morning at 8am, sent from
+jmactheman@agentmail.to with subject "Pool advisory — YYYY-MM-DD". If Shea
+references "today's advisory" or you want to know what was already recommended,
+search that inbox's sent messages via the AgentMail connector. It works from
+the same database views you read, so you can always re-derive its reasoning
+directly from the data.
+
 ## Chemistry method (TFP-style)
 - FC targets scale with CYA: minimum = cya × 7.5%, target ≈ cya × 11.5%
   (these percentages come from `get_pool_config` — use the config values).
