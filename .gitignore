@@ -3,3 +3,4 @@ node_modules/
 agent/.env
 agent/agent.log
 mcp/.env
+.claude/settings.local.json
