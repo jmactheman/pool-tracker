@@ -20,6 +20,9 @@ Before answering any water-chemistry question, pull current data with the
   fc_target, fc_adequate, cc_shock, out-of-range flags, lsi_approx, and
   *_per_week trend slopes.
 - `get_recent_readings` — history for trends.
+- `get_equipment_telemetry` — water temperature + pump runtime pushed by Home
+  Assistant every ~15 min (water_temp_f, pump_running, pump_runtime_min =
+  minutes run so far that day, resets at midnight).
 
 The database already did the math — interpret those fields, don't recompute
 them. If the tools are unavailable or empty, say so and ask for current test
@@ -42,7 +45,15 @@ directly from the data.
   cya_per_week. When CYA runs past the config's cya_hi, recommend shifting to
   liquid chlorine; explain that rising CYA silently raises the FC the pool needs.
 - Treat lsi_approx as directional; for scale/etching decisions, walk through an
-  exact CSI with the current numbers before recommending action.
+  exact CSI with the current numbers before recommending action — use the
+  latest water_temp_f from `get_equipment_telemetry` as the temperature term
+  (it's live from the pool, better than the hand-entered temp on readings).
+- Pump runtime contextualizes chlorine loss: FC that "disappeared" overnight
+  while the pump barely ran may just be poor circulation/mixing, not real
+  demand — check pump_runtime_min before calling for a SLAM. Typical healthy
+  runtime for this pool is several hours/day; flag days with very low runtime.
+- If `get_equipment_telemetry` errors or returns nothing, the Home Assistant
+  feed isn't live — carry on with chemistry data and note temp is unverified.
 
 ## Dosing conventions — always show the math
 Every recommendation = exact amount for 13,000 gal + the arithmetic + the

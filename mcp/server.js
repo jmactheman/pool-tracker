@@ -63,6 +63,29 @@ server.tool(
 );
 
 server.tool(
+  'get_equipment_telemetry',
+  'Recent water-temperature and pump telemetry pushed by Home Assistant ' +
+    '(newest first, ~15-minute cadence): water_temp_f, pump_running, ' +
+    'pump_runtime_min (minutes run so far that day — resets at midnight), ' +
+    'recorded_at. Use the latest water_temp_f for exact CSI/LSI math, and ' +
+    'pump runtime to judge whether overnight FC loss happened while water ' +
+    'was actually circulating. Default limit 96 ≈ last 24 hours.',
+  {
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(500)
+      .default(96)
+      .describe('How many telemetry rows to return, newest first (default 96 ≈ 24h)'),
+  },
+  async ({ limit }) =>
+    asResult(
+      await rest(`equipment_telemetry?select=*&order=recorded_at.desc&limit=${limit}`),
+    ),
+);
+
+server.tool(
   'get_pool_config',
   'The pool configuration row: volume_gal, sanitation (liquid/swg/tabs), surface, ' +
     'FC min/target percentages, and target ranges for CYA/pH/TA/CH/salt.',
